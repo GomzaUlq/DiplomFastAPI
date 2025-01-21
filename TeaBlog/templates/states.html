@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block title %}Статьи{% endblock %}
+
+{% block content %}
+        <h1>Статьи о китайском чае</h1>
+        <div class="article-list">
+            {% for state in states %}
+                <div class="article-item">
+                    <a href="{{ state.id }}">
+                        <img src="../static/images/{{ state.image_url }}.jpg" alt="{{ state.title }}" class="article-image">
+                        <h2 class="article-title">{{ state.title }}</h2>
+                    </a>
+                </div>
+            {% endfor %}
+        </div>
+{% endblock %}

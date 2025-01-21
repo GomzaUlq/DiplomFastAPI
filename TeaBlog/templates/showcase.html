@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+
+{% block title %}Каталог{% endblock %}
+
+{% block content %}
+<h1>Каталог</h1>
+<div class="product-container">
+    {% for product in products %}
+    <div class="product-card">
+        <img src="../static/images/{{ product.image }}.jpg" alt="{{ product.name }}">
+        <h2>{{ product.name }}</h2>
+        <p>{{ product.description }}</p>
+        <p>Цена: {{ product.price }}₽</p>
+        <button type="button" class="btncart" onclick="addToCart({{ product.id }})">Добавить в корзину</button>
+    </div>
+    {% endfor %}
+</div>
+
+<script>
+function addToCart(productId) {
+    const cartId = 1; // Замените на актуальный ID корзины
+    fetch(`/cart/${cartId}/items`, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ product_id: productId })
+    })
+    .then(response => response.json())
+    .then(data => {
+        alert(data.message); // Показываем сообщение о результате
+    })
+    .catch(error => {
+        console.error('Ошибка:', error);
+    });
+}
+</script>
+{% endblock %}

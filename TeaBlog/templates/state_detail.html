@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+
+{% block title %}{{ state.title }}{% endblock %}
+
+{% block content %}
+        <h1>{{ state.title }}</h1>
+<div class="article-container">
+        <img src="../static/images/{{ state.image_url }}.jpg" alt="{{ state.title }}" class="article-image">
+        <div class="article-content">
+            <p>{{ state.content }}</p>
+        </div>
+</div>
+        <a href="/states"><button type="submit" class="btncart">Назад к статьям</button></a>
+{% endblock %}

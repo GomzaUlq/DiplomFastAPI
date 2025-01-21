@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% block title %}Главная страница{% endblock %}
+
+{% block content %}
+    <div class="about-content">
+        <h2>О нас</h2>
+        <p>{{ content|replace ('\n', "<br>")|safe }}</p>
+    </div>
+{% endblock %}
