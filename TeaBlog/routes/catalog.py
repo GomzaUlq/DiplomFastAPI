@@ -3,6 +3,8 @@ from fastapi.responses import HTMLResponse
 from sqlalchemy.orm import Session
 from backend.db_depends import get_db
 from models.catalog import Product, Category
+from models.user import User
+from routes.user import get_current_user_or_none
 from schemas.catalog import CreateCategory, UpdateCategory, CreateProduct
 from backend.config import templates
 
@@ -46,12 +48,16 @@ async def delete_product(product_id: int, db: Session = Depends(get_db)):
     return {"detail": "Product deleted successfully"}
 
 
-@router.get("/cart_view/", response_class=HTMLResponse)
-async def read_products(request: Request):
-    return templates.TemplateResponse("cart_view.html", {"request": request})
-
-
 @router.get("/showcase/", response_class=HTMLResponse)
-async def read_products(request: Request, db: Session = Depends(get_db)):
+async def read_products(
+        request: Request,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user_or_none)
+):
     all_product = db.query(Product).all()
-    return templates.TemplateResponse("showcase.html", {"request": request, "products": all_product})
+
+    context = {"request": request, "products": all_product}
+    if current_user:
+        context["current_user"] = current_user
+
+    return templates.TemplateResponse("showcase.html", context)
