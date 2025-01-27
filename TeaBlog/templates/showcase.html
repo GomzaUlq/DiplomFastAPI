@@ -11,28 +11,29 @@
         <h2>{{ product.name }}</h2>
         <p>{{ product.description }}</p>
         <p>Цена: {{ product.price }}₽</p>
-        <button type="button" class="btncart" onclick="addToCart({{ product.id }})">Добавить в корзину</button>
+       <button type="button" class="btncart" onclick="addToCart({{ product.id }}, 1)">Добавить в корзину</button>
     </div>
     {% endfor %}
 </div>
 
 <script>
-function addToCart(productId) {
-    const cartId = 1; // Замените на актуальный ID корзины
-    fetch(`/cart/${cartId}/items`, {
+function addToCart(productId, quantity) {
+    fetch(`/cart/add/${productId}`, {
         method: 'POST',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
         },
-        body: JSON.stringify({ product_id: productId })
+        body: JSON.stringify({ quantity: quantity }),
     })
     .then(response => response.json())
     .then(data => {
-        alert(data.message); // Показываем сообщение о результате
+        alert(data.message);
     })
     .catch(error => {
-        console.error('Ошибка:', error);
-    });
+    alert('Ошибка: ' + error);
+    console.error('Ошибка:', error);
+});
 }
 </script>
+
 {% endblock %}

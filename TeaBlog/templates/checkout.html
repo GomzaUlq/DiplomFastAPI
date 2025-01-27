@@ -1,0 +1,26 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h1>Оформление заказа</h1>
+
+<ul>
+    {% for item in items %}
+        <li>
+            {{ item.product.name }} - {{ item.quantity }} шт. - {{ item.product.price }}₽
+            = {{ item.product.price * item.quantity }}₽
+        </li>
+    {% endfor %}
+</ul>
+
+<p><strong>Общая стоимость: {{ total_price }}₽</strong></p>
+
+<form method="post">
+    <input type="hidden" name="_csrf_token" value="{{ csrf_token }}">
+    <label for="address">Адрес:</label>
+    <input type="text" id="address" name="address" required>
+    <label for="phone">Номер телефона:</label>
+    <input type="text" id="phone" name="phone" required>
+    <button type="submit" class="btncart">Подтвердить заказ</button>
+</form>
+
+{% endblock %}

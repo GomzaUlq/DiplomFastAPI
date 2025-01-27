@@ -1,6 +1,75 @@
 {% extends "base.html" %}
 
+
 {% block content %}
+<script>
+function updateCartItem(itemId, cartId, quantity) {
+    console.log("Updating cart item:", itemId, cartId, quantity);
+
+    fetch('/cart/update_cart_item/' + itemId, {
+        method: 'POST',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify({ cart_id: cartId, quantity: quantity })
+    }).then(response => response.json())
+      .then(data => {
+          alert(data.message);
+          // Обновляем стоимость товара и итоговую сумму
+          updateTotalPrice();
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+}
+
+function removeCartItem(cartId, itemId) {
+    console.log("Removing cart item:", cartId, itemId);
+
+    fetch('/cart/remove_cart_item/' + cartId + '/' + itemId, {
+        method: 'GET'
+    }).then(response => response.json())
+      .then(data => {
+          alert(data.message);
+          location.reload(); // Перезагружаем страницу после удаления
+      })
+      .catch(error => {
+          console.error('Error:', error);
+      });
+}
+
+function updateTotalPrice() {
+    let totalPrice = 0;
+    const items = document.querySelectorAll('.cart-item'); // Получаем все элементы с классом cart-item
+
+    items.forEach(item => {
+        const price = parseFloat(item.getAttribute('data-price'));
+        const quantity = parseInt(item.querySelector('input[name="quantity"]').value);
+        totalPrice += price * quantity; // Считаем общую стоимость
+    });
+
+    document.getElementById('total-price').innerText = totalPrice.toFixed(2) + '₽'; // Обновляем итоговую сумму
+}
+</script>
 <h1>Ваша корзина</h1>
-    <h2>К сожалению корзина пока не работает</h2>
+<ul>
+    {% if items %}
+        {% set total_price = 0 %}
+        {% for item in items %}
+            <li class="cart-item" data-price="{{ item.product.price }}" style="display: flex; align-items: center;">
+                {{ item.product.name }} -
+                <form action="javascript:void(0);" onsubmit="updateCartItem({{ item.id }}, {{ cart.id }}, this.quantity.value)" style="margin-right: 10px;">
+                    <input type="number" name="quantity" value="{{ item.quantity }}" min="1" onchange="updateTotalPrice()">
+                    <button type="submit">Обновить</button>
+                </form>
+                <button onclick="removeCartItem({{ cart.id }}, {{ item.id }})">Удалить</button>
+            </li>
+        {% endfor %}
+    {% else %}
+        <li>Ваша корзина пустая</li>
+    {% endif %}
+</ul>
+<h2>Итого: <span id="total-price">{{ total_price }}₽</span></h2>
+<a href="{{ url_for('checkout') }}"><button type="submit" class="btncart">Оформить заказ</button></a>
 {% endblock %}
+

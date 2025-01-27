@@ -211,32 +211,37 @@ nav {
         <a href="/"><img src="/static/images/logo.png" alt="Логотип" class="logo"></a>
         <nav>
             <a href="/showcase">Каталог</a>
-            <a href="/cart_view">Корзина</a>
+            <a href="/cart">Корзина</a>
             <a href="/about">О нас</a>
             <a href="/states">Статьи</a>
         </nav>
-            <div class="dropdown">
-                <button class="dropbtn">Личный кабинет</button>
-                <div class="dropdown-content">
-                    <a href='/login'>Войти</a>
-                    <a href='/register'>Зарегистрироваться</a>
-                </div>
-            </div>
+        <div class="dropdown">
+    {% if current_user %}
+        <button class="dropbtn">Добро пожаловать, {{ current_user.first_name }}!</button>
+        <div class="dropdown-content">
+            <a href="/logout">Выйти</a>
+        </div>
+    {% else %}
+        <button class="dropbtn">Личный кабинет</button>
+        <div class="dropdown-content">
+            <a href='/login'>Войти</a>
+            <a href='/register'>Зарегистрироваться</a>
+        </div>
+    {% endif %}
+        </div>
+
     </header>
     <main>
         {% block content %}<h1>Рады приветствовать Вас в нашем чайном магазине</h1> {% endblock %}
     </main>
 
     <footer>
-            <a href="/showcase/">Каталог</a>
-            <a href="/cart_view/">Корзина</a>
-            <a href="/about">О нас</a>
-            <a href="/states">Статьи</a>
-            <p>Пейте хороший чай и оставайтесь хорошими людьми!</p>
-            <p>@2024, Первый чайный</p>
+        <a href="/showcase/">Каталог</a>
+        <a href="/cart">Корзина</a>
+        <a href="/about">О нас</a>
+        <a href="/states">Статьи</a>
+        <p>Пейте хороший чай и оставайтесь хорошими людьми!</p>
+        <p>@2024, Первый чайный</p>
     </footer>
-
-
-
 </body>
 </html>
