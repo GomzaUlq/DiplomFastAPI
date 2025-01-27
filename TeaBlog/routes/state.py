@@ -4,6 +4,8 @@ from backend.config import templates
 from backend.db_depends import get_db
 from fastapi.responses import HTMLResponse
 from models.state import State
+from models.user import User
+from routes.user import get_current_user_or_none
 from schemas.state import CreateState, UpdateState
 
 router = APIRouter()
@@ -19,17 +21,36 @@ async def create_state(state: CreateState, db: Session = Depends(get_db)):
 
 
 @router.get("/states/{state_id}", response_class=HTMLResponse)
-async def read_state(state_id: int, request: Request, db: Session = Depends(get_db)):
+async def read_state(
+        state_id: int,
+        request: Request,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user_or_none)
+):
     state = db.query(State).filter(State.id == state_id).first()
     if state is None:
         raise HTTPException(status_code=404, detail="Статья не найдена")
-    return templates.TemplateResponse("state_detail.html", {"request": request, "state": state})
+
+    context = {"request": request, "state": state}
+    if current_user:
+        context["current_user"] = current_user
+
+    return templates.TemplateResponse("state_detail.html", context)
 
 
 @router.get("/states/", response_class=HTMLResponse)
-async def read_states(request: Request, db: Session = Depends(get_db)):
+async def read_states(
+        request: Request,
+        db: Session = Depends(get_db),
+        current_user: User = Depends(get_current_user_or_none)
+):
     states = db.query(State).all()
-    return templates.TemplateResponse("states.html", {"request": request, "states": states})
+
+    context = {"request": request, "states": states}
+    if current_user:
+        context["current_user"] = current_user
+
+    return templates.TemplateResponse("states.html", context)
 
 
 @router.put("/states/{state_id}", response_model=CreateState)
@@ -74,7 +95,15 @@ async def upload_image(file: UploadFile = File(...)):
 
 
 @router.get("/about", response_class=HTMLResponse)
-async def about(request: Request):
+async def about(
+        request: Request,
+        current_user: User = Depends(get_current_user_or_none)
+):
     with open('static/about.txt', 'r', encoding='utf-8') as file:
         content = file.read()
-    return templates.TemplateResponse("about.html", {"request": request, "content": content})
+
+    context = {"request": request, "content": content}
+    if current_user:
+        context["current_user"] = current_user
+
+    return templates.TemplateResponse("about.html", context)
