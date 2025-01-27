@@ -8,7 +8,7 @@ class Cart(Base):
 
     id = Column(Integer, primary_key=True)
     user_id = Column(Integer, ForeignKey('users.id'), nullable=False)
-    products = relationship('CartItem', backref='cart', lazy=True)
+    products = relationship('CartItem', backref='cart', lazy=True, cascade="all, delete-orphan")
 
     def total_quantity(self):
         return sum(item.quantity for item in self.products)
